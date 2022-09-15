@@ -37,7 +37,7 @@ In your server's yaml file, deploy this multiplexer as one of its container:
 -containers:
     ...
     - name: prom-multiplexer-sidecar
-          image: <path to multiplexer's image>
+          image: <IMAGE_PATH>
           command:
             - "/metrics-multiplexer-sidecar"
             - "--endpoint=<ENDPOINT>"
@@ -56,38 +56,16 @@ In your server's yaml file, deploy this multiplexer as one of its container:
               cpu: 50m
           ports:
             - containerPort: <PORT>
-              name: <PORT_NAME>>
+              name: <PORT_NAME>
 ```
 
 The sidecar should be the only one who owns the metric port. Edit the ports of your other containers
 within this service to make sure no containers have the same port value.
 
-### Dropping Prometheus' Container Labels
-
-After scraping metrics, this binary will add a "container" label to every metric, while the
-Prometheus is trying to do the same. This Prometheus label will be added in advance, as the content
-of that label is different for every container, the Prometheus will treat them as different pods
-and therefore causes metric duplication issues.
-
-To prevent this, in the yaml file of your service monitor a "label_drop" action should be conducted
-in order to drop the Prometheus' "container label" first:
-
-```aidl
-relabelings:
-    ...
-    - action: labeldrop
-          regex: (container)
-```
-
-Prometheus will then only see one single endpoint, and we only get 1 set of metrics.
-
 ## Test Your Setup
 
 After deploying the sidecar, you can hit the metrics endpoint and check if the metrics from
 different containers are collected correctly.
-
-Remember to check if the metric duplication issue occurs in your Prometheus' result. If it happens,
-check if you have dropped the Prometheus' "container" label correctly.
 
 ## Diagram
 
