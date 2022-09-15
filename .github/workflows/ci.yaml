@@ -1,0 +1,28 @@
+name: Test and Release
+on: [push, pull_request]
+jobs:
+  test:
+    name: Run test suite
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Docker Image
+        command: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$CIRCLE_SHA1"
+  release:
+    needs: [ test ]
+    name: Push image
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Docker Image
+        command: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$CIRCLE_SHA1"
+      - name: Push Docker Image to Docker Hub
+        command: |
+          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+          docker push thoughtmachine/prometheus-multiplexer-sidecar:"$CIRCLE_SHA1"
