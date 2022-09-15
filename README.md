@@ -66,7 +66,7 @@ within this service to make sure no containers have the same port value.
 
 After scraping metrics, this binary will add a "container" label to every metric, while the
 Prometheus is trying to do the same. This Prometheus label will be added in advance, as the content
-of that label is different for every container, the Prometheus will treats them as different pods
+of that label is different for every container, the Prometheus will treat them as different pods
 and therefore causes metric duplication issues.
 
 To prevent this, in the yaml file of your service monitor a "label_drop" action should be conducted
@@ -88,7 +88,6 @@ different containers are collected correctly.
 
 Remember to check if the metric duplication issue occurs in your Prometheus' result. If it happens,
 check if you have dropped the Prometheus' "container" label correctly.
-[[instruction]](#dropping-prometheus'-container-labels)
 
 ## Diagram
 
