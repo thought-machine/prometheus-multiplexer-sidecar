@@ -8,7 +8,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build Docker Image
-        command: docker build -f Dockerfile-builder . --rm=false
+        run: docker build -f Dockerfile-builder . --rm=false
   release:
     needs: [ test ]
     name: Push image
@@ -20,8 +20,8 @@ jobs:
       - name: Add SHORT_SHA env property with commit short sha
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
       - name: Build Docker Image
-        command: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
+        run: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
       - name: Push Docker Image to Docker Hub
-        command: |
+        run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
           docker push thoughtmachine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
