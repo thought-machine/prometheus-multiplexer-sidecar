@@ -4,6 +4,8 @@ A simple binary that can be deployed as a sidecar in Kubernetes for collecting m
 different containers within a Pod and serving these on a single endpoint by mutating the metrics
 with the container name as a label.
 
+This was originally started as an intern project by [Chengcheng Xing](https://github.com/Xichc1127) during her internship at [Thought Machine](https://thoughtmachine.net/).
+
 ## Introduction
 
 This binary is a new tool for scraping metrics with Prometheus. It works with multi-container pods,
