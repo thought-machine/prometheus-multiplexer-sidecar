@@ -35,7 +35,7 @@ Specific libraries include:
 
 In your server's yaml file, deploy this multiplexer as one of its container:
 
-```aidl
+```yaml
 -containers:
     ...
     - name: prom-multiplexer-sidecar
