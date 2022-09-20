@@ -23,5 +23,5 @@ jobs:
         run: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
       - name: Push Docker Image to ghcr.io
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login -u $GITHUB_ACTOR --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin
           docker push ghcr.io/thought-machine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
