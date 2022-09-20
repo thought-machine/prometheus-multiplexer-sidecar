@@ -1,0 +1,26 @@
+# golang:1.19.1
+FROM golang:1.19.1-alpine3.16 as builder
+
+RUN ln -s /usr/local/go/bin/go /usr/local/bin/go
+
+RUN apk add --no-cache curl wget gcc make bash git musl-dev libc6-compat gettext
+
+RUN touch /root/.profile
+
+WORKDIR /go/github.com/thought-machine/prometheus-multiplexer-sidecar
+
+COPY . .
+
+RUN ./pleasew test //... --exclude 'docker'
+
+RUN ./pleasew build //... --exclude 'docker'
+
+FROM scratch
+
+EXPOSE 13434
+
+COPY --from=builder /go/github.com/thought-machine/prometheus-multiplexer-sidecar/plz-out/bin/cmd/metrics-multiplexer-sidecar /home/app/metrics-multiplexer-sidecar
+
+USER 255999
+
+ENTRYPOINT ["/home/app/metrics-multiplexer-sidecar"]

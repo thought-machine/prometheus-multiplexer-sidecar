@@ -1,0 +1,27 @@
+name: Test and Release
+on: [push, pull_request]
+jobs:
+  test:
+    name: Run test suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Docker Image
+        run: docker build -f Dockerfile-builder . --rm=false
+  release:
+    needs: [ test ]
+    name: Push image
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+      - name: Build Docker Image
+        run: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
+      - name: Push Docker Image to ghcr.io
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ secrets.GITHUB_ACTOR }} --password-stdin
+          docker push ghcr.io/thought-machine/prometheus-multiplexer-sidecar:"$SHORT_SHA"
