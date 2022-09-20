@@ -8,7 +8,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build Docker Image
-        command: docker build -f Dockerfile-builder . --rm=false -t thoughtmachine/prometheus-multiplexer-sidecar:"$CIRCLE_SHA1"
+        command: docker build -f Dockerfile-builder . --rm=false
   release:
     needs: [ test ]
     name: Push image
